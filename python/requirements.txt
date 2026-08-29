@@ -1,0 +1,8 @@
+httpx
+pandas
+sentence-transformers
+numpy
+scikit-learn
+umap-learn
+psycopg[binary]
+tqdm
