@@ -9,6 +9,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test \"lib/**/*.test.ts\"",
+    "test:security": "node --experimental-strip-types --test lib/security/sanitize.test.ts",
     "test:python": "cd python && .venv/Scripts/python.exe -m unittest discover -s pipeline -p \"test_*.py\"",
     "db:status": "node scripts/db-status.mjs",
     "db:migrate": "node scripts/apply-migrations.mjs"

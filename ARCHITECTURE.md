@@ -41,10 +41,16 @@ map filters read them:
 
 ## Security Model
 
-- Server‑only env vars: `STEAM_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`.
+- **Secrets**: `STEAM_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, and `CRON_SECRET` are read only via `lib/env/server.ts` in Route Handlers — never from Client Components or `next.config.js`.
+- **Rate limiting**: `middleware.ts` applies per-IP sliding-window limits on `/api/*` (tighter on `/api/ask` and POST routes).
+- **CSRF / origin**: POST API routes reject cross-origin requests in production when `Origin`/`Referer` does not match `NEXT_PUBLIC_SITE_URL` or the Vercel deployment URL.
+- **Cookie injection**: malformed `Cookie` headers (CR/LF/null, oversized) are rejected before handlers run.
+- **Prompt injection**: `/api/ask` sanitizes user text; Groq rephrase wraps content in tagged blocks and ignores instruction-like phrases. Ranking never depends on LLM output.
+- **Headers**: CSP, `X-Frame-Options: DENY`, `nosniff`, and related headers on every response.
+- **Cron auth**: `/api/keepalive` requires `Authorization: Bearer <CRON_SECRET>` in production.
 - RLS protects `profiles`, `user_game_history`, `recommendations`.
-- Public tables (`games`, `game_tags`, etc.) are read‑only for unauthenticated users.
-- All external input validated with Zod schemas.
+- Public tables (`games`, `game_tags`, etc.) are read-only for unauthenticated users.
+- All external input validated with Zod schemas; API errors never echo secret names or stack traces.
 
 ## Extensibility
 

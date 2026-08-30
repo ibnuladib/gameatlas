@@ -1,8 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { recommendGames } from '@/lib/recommendations/engine';
 import { getServerSupabaseClient } from '@/lib/supabase/client';
 import { fetchSteamLibrary, resolveSteamId, SteamUnavailableError } from '@/lib/steam/api';
+import { guardApiRequest, jsonResponse } from '@/lib/security/api-guard';
+import { sanitizeErrorMessage } from '@/lib/security/sanitize';
 
 const bodySchema = z.object({
   steam: z.string().trim().min(2).max(200).optional(),
@@ -12,10 +14,14 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const parsed = bodySchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  const guard = await guardApiRequest(request, { requireJsonPost: true });
+  if (!guard.ok) return guard.response;
+
+  const parsed = bodySchema.safeParse(guard.body);
+  if (!parsed.success) return jsonResponse({ error: 'Invalid request' }, { status: 400 });
+
   const supabase = getServerSupabaseClient();
-  if (!supabase) return NextResponse.json({ error: 'Supabase is not configured' }, { status: 503 });
+  if (!supabase) return jsonResponse({ error: 'Supabase is not configured' }, { status: 503 });
 
   try {
     let seedIds = parsed.data.gameIds ?? [];
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
       seedIds = weighted;
     }
     if (seedIds.length === 0) {
-      return NextResponse.json({
+      return jsonResponse({
         games: [],
         relaxed: false,
         notice: 'No catalog games to build a preference vector from. Connect a public Steam library or pick seed games.',
@@ -59,12 +65,11 @@ export async function POST(request: NextRequest) {
       maxPlaytimeHours: parsed.data.maxPlaytimeHours,
       minReviewScore: parsed.data.minReviewScore,
     });
-    return NextResponse.json(result);
+    return jsonResponse(result);
   } catch (error) {
     if (error instanceof SteamUnavailableError) {
-      return NextResponse.json({ games: [], relaxed: false, notice: error.message });
+      return jsonResponse({ games: [], relaxed: false, notice: error.message });
     }
-    const message = error instanceof Error ? error.message : 'Recommendation failed';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return jsonResponse({ error: sanitizeErrorMessage(error, 'Recommendation failed') }, { status: 500 });
   }
 }

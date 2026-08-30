@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseDiscoveryQuery } from './parse.ts';
+import { parseDiscoveryQuery } from './parse';
 
 test('extracts the game named after "like"', () => {
   const slots = parseDiscoveryQuery('something like Elden Ring');

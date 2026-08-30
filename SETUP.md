@@ -79,24 +79,18 @@
 9. **Deploy to Vercel**:
    - Push the repo to GitHub.
    - In Vercel, import the GitHub repo and select the **Next.js** framework.
-   - Add the same env vars (except the service‑role key – keep that server‑only).
+   - Add the same env vars from `.env.example`, including `SUPABASE_SERVICE_ROLE_KEY` (server-only), `CRON_SECRET`, and `NEXT_PUBLIC_SITE_URL` (your production URL, for CSRF origin checks).
    - Vercel will build and deploy automatically.
 
 ## Daily Keep‑Alive Cron (Vercel)
 
-Supabase free projects pause after 7 days of inactivity. Set up a Vercel cron (free tier) that runs daily:
-```js
-// app/api/keepalive/route.ts
-import { getServerSupabaseClient } from '@/lib/supabase/client';
+Supabase free projects pause after 7 days of inactivity. `vercel.json` already schedules `/api/keepalive` daily.
 
-export async function GET() {
-  const supabase = getServerSupabaseClient();
-  if (!supabase) return new Response('Supabase is not configured', { status: 503 });
-  await supabase.from('games').select('id').limit(1).single();
-  return new Response('ok');
-}
-```
-The route is triggered by Vercel's daily cron (configure in Vercel dashboard). No additional cost.
+1. Generate a secret: `openssl rand -hex 32`
+2. Add `CRON_SECRET=<that value>` in the Vercel dashboard.
+3. Vercel automatically sends `Authorization: Bearer <CRON_SECRET>` on cron invocations.
+
+In production, unauthenticated hits to `/api/keepalive` return 401. No additional cost.
 
 ## Optional API: Groq for Natural Language
 
@@ -109,4 +103,4 @@ The app will use Groq to rephrase explanations, but the core recommendation engi
 
 ---
 
-**All credentials stay server‑side** – never expose `STEAM_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, or `GROQ_API_KEY` to the browser.
+**All credentials stay server‑side** — never expose `STEAM_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, or `CRON_SECRET` to the browser. Do not prefix secrets with `NEXT_PUBLIC_`.

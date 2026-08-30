@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { MapFilters, MappedGame, SimilarGame } from '@/lib/games/types';
+import { escapeLikePattern } from '@/lib/security/sanitize';
 
 const GAME_COLUMNS =
   'id, steam_appid, name, description, genres, developer, publisher, release_date, header_image_url, capsule_image_url, review_score, review_count, average_playtime';
@@ -26,7 +27,7 @@ export async function listMappedGames(supabase: SupabaseClient, filters: MapFilt
     .select(`${GAME_COLUMNS}, game_coordinates!inner(x, y, projection_version)`)
     .limit(1500);
 
-  if (filters.q) query = query.ilike('name', `%${filters.q}%`);
+  if (filters.q) query = query.ilike('name', `%${escapeLikePattern(filters.q)}%`);
   if (filters.genre) query = query.contains('genres', [filters.genre]);
   if (filters.yearMin) query = query.gte('release_date', `${filters.yearMin}-01-01`);
   if (filters.yearMax) query = query.lte('release_date', `${filters.yearMax}-12-31`);
@@ -65,7 +66,7 @@ export async function findGamesByName(supabase: SupabaseClient, names: string[])
     const { data, error } = await supabase
       .from('games')
       .select('id, name')
-      .ilike('name', `%${name}%`)
+      .ilike('name', `%${escapeLikePattern(name)}%`)
       .limit(5);
     if (error) throw new Error(error.message);
     if (data?.[0]) resolved.push(data[0]);

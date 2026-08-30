@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { listMappedGames } from '@/lib/games/queries';
 import { getServerSupabaseClient } from '@/lib/supabase/client';
+import { jsonResponse } from '@/lib/security/api-guard';
+import { sanitizeErrorMessage } from '@/lib/security/sanitize';
 
 const filtersSchema = z.object({
   q: z.string().trim().max(80).optional(),
@@ -14,16 +16,20 @@ const filtersSchema = z.object({
 
 export async function GET(request: NextRequest) {
   const supabase = getServerSupabaseClient();
-  if (!supabase) return NextResponse.json({ games: [], configured: false });
+  if (!supabase) return jsonResponse({ games: [], configured: false });
+
   const parsed = filtersSchema.safeParse(Object.fromEntries(request.nextUrl.searchParams));
   if (!parsed.success) {
-    return NextResponse.json({ games: [], configured: true, error: 'Invalid filters' }, { status: 400 });
+    return jsonResponse({ games: [], configured: true, error: 'Invalid filters' }, { status: 400 });
   }
+
   try {
     const games = await listMappedGames(supabase, parsed.data);
-    return NextResponse.json({ games, configured: true });
+    return jsonResponse({ games, configured: true });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Query failed';
-    return NextResponse.json({ games: [], configured: true, error: message }, { status: 500 });
+    return jsonResponse(
+      { games: [], configured: true, error: sanitizeErrorMessage(error, 'Query failed') },
+      { status: 500 },
+    );
   }
 }

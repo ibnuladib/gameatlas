@@ -1,23 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getServerSupabaseClient } from '@/lib/supabase/client';
 import { fetchSteamLibrary, resolveSteamId, SteamUnavailableError } from '@/lib/steam/api';
+import { guardApiRequest, jsonResponse } from '@/lib/security/api-guard';
+import { sanitizeErrorMessage } from '@/lib/security/sanitize';
 
 const bodySchema = z.object({ steam: z.string().trim().min(2).max(200) });
 
 export async function POST(request: NextRequest) {
-  const parsed = bodySchema.safeParse(await request.json().catch(() => null));
+  const guard = await guardApiRequest(request, { requireJsonPost: true });
+  if (!guard.ok) return guard.response;
+
+  const parsed = bodySchema.safeParse(guard.body);
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Enter a Steam ID or profile URL' }, { status: 400 });
+    return jsonResponse({ error: 'Enter a Steam ID or profile URL' }, { status: 400 });
   }
+
   const supabase = getServerSupabaseClient();
-  if (!supabase) return NextResponse.json({ error: 'Supabase is not configured' }, { status: 503 });
+  if (!supabase) return jsonResponse({ error: 'Supabase is not configured' }, { status: 503 });
 
   try {
     const steamId = await resolveSteamId(parsed.data.steam);
     const library = await fetchSteamLibrary(steamId);
     if (library.length === 0) {
-      return NextResponse.json({
+      return jsonResponse({
         steamId,
         games: [],
         unavailable: [],
@@ -25,7 +31,14 @@ export async function POST(request: NextRequest) {
       });
     }
     const appids = library.map((game) => game.appid);
-    const matched: { id: number; steam_appid: number; name: string; header_image_url: string | null; genres: string[] | null; review_score: number | null }[] = [];
+    const matched: {
+      id: number;
+      steam_appid: number;
+      name: string;
+      header_image_url: string | null;
+      genres: string[] | null;
+      review_score: number | null;
+    }[] = [];
     for (let i = 0; i < appids.length; i += 120) {
       const { data, error } = await supabase
         .from('games')
@@ -46,12 +59,11 @@ export async function POST(request: NextRequest) {
       }
     }
     games.sort((a, b) => Number(b.recent) - Number(a.recent) || b.playtimeMinutes - a.playtimeMinutes);
-    return NextResponse.json({ steamId, games, unavailable: unavailable.slice(0, 25) });
+    return jsonResponse({ steamId, games, unavailable: unavailable.slice(0, 25) });
   } catch (error) {
     if (error instanceof SteamUnavailableError) {
-      return NextResponse.json({ error: error.message, games: [], unavailable: [] }, { status: 200 });
+      return jsonResponse({ error: error.message, games: [], unavailable: [] });
     }
-    const message = error instanceof Error ? error.message : 'Lookup failed';
-    return NextResponse.json({ error: message }, { status: 500 });
+    return jsonResponse({ error: sanitizeErrorMessage(error, 'Lookup failed') }, { status: 500 });
   }
 }

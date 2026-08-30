@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { getSecret } from '@/lib/env/server';
 
-const steamKey = () => process.env.STEAM_API_KEY ?? '';
+const steamKey = () => getSecret('STEAM_API_KEY') ?? '';
 
 const ownedGamesSchema = z.object({
   response: z
