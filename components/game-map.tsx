@@ -108,7 +108,7 @@ export function GameMap() {
         type: 'scattergl' as const,
         mode: 'markers' as const,
         marker: { 
-          size: 7, 
+          size: 6, 
           color: '#95c44d',
           opacity: 0.6,
           line: { width: 0 }
@@ -125,7 +125,7 @@ export function GameMap() {
         type: 'scattergl' as const,
         mode: 'markers' as const,
         marker: { 
-          size: 10, 
+          size: 8, 
           color: '#7ec8e3',
           opacity: 0.9,
           line: { width: 1, color: '#fff' }
@@ -142,7 +142,7 @@ export function GameMap() {
         type: 'scattergl' as const,
         mode: 'markers' as const,
         marker: { 
-          size: 14, 
+          size: 11, 
           color: '#ffffff',
           line: { width: 2, color: '#bdf16b' }
         },
@@ -242,13 +242,13 @@ export function GameMap() {
               {selected.header_image_url ? (
                 <img className="panel-cover" src={selected.header_image_url} alt={selected.name} />
               ) : (
-                <div className="panel-cover" style={{ height: '140px', background: 'var(--border)', display: 'grid', placeItems: 'center' }}>
+                <div className="panel-cover" style={{ height: '112px', background: 'var(--border)', display: 'grid', placeItems: 'center' }}>
                   <span style={{ opacity: 0.2, color: 'var(--text-primary)' }}>No Cover</span>
                 </div>
               )}
               <h2>{selected.name}</h2>
               <p className="genre-list">{selected.genres?.join(' · ') || 'Genre data pending'}</p>
-              <p style={{ marginTop: '12px' }}>{selected.description}</p>
+              <p style={{ marginTop: '10px' }}>{selected.description}</p>
               <dl>
                 <div>
                   <dt>Steam score</dt>
@@ -285,7 +285,7 @@ export function GameMap() {
               <p className="eyebrow">Start exploring</p>
               <h2>Choose a point.</h2>
               <p>Each point is a game. Nearby games share themes, mechanics, and player experience.</p>
-              <p style={{ marginTop: '16px' }}>Scroll to zoom, drag to pan the map.</p>
+              <p style={{ marginTop: '12px' }}>Scroll to zoom, drag to pan the map.</p>
             </div>
           )}
         </aside>

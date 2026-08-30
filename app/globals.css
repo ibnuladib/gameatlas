@@ -386,6 +386,11 @@ img {
   min-height: calc(100vh - 72px);
 }
 
+.map-page {
+  display: flex;
+  flex-direction: column;
+}
+
 .narrow {
   max-width: 900px;
 }
@@ -510,7 +515,8 @@ img {
 
 /* ─── Game Map ─── */
 .map-page {
-  padding-top: 40px;
+  padding: clamp(24px, 5vh, 52px) clamp(20px, 5vw, 64px);
+  padding-top: 24px;
   background:
     radial-gradient(ellipse at 50% 30%, rgba(30, 55, 45, 0.2) 0%, transparent 50%),
     var(--bg-primary);
@@ -520,39 +526,51 @@ img {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 28px;
-  gap: 24px;
+  margin-bottom: 18px;
+  gap: 16px;
 }
 
 .map-heading h1 {
-  font-size: clamp(2.4rem, 5vw, 4.4rem);
+  font-size: clamp(1.9rem, 4vw, 3.5rem);
+}
+
+.map-page .eyebrow {
+  margin-bottom: 8px;
+  font-size: 9px;
+  letter-spacing: 1.6px;
 }
 
 .map-controls {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
   align-items: flex-end;
 }
 
 .search {
-  width: 260px;
+  width: 208px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--accent);
+  font-size: 12px;
 }
 
 .search input {
   width: 100%;
 }
 
+.map-page .search input {
+  font-size: 12px;
+  padding: 10px 12px;
+}
+
 .map-controls select {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   color: var(--text-primary);
-  font: 14px var(--font-body);
-  padding: 14px 16px;
+  font: 12px var(--font-body);
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   outline: none;
   transition: all var(--transition-fast);
@@ -566,8 +584,9 @@ img {
 
 .map-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  min-height: 600px;
+  grid-template-columns: minmax(0, 1fr) 256px;
+  flex: 1;
+  min-height: 480px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -581,7 +600,7 @@ img {
     radial-gradient(circle at 70% 70%, rgba(30, 40, 28, 0.5), transparent 50%),
     linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
   overflow: hidden;
-  min-height: 550px;
+  min-height: 440px;
 }
 
 /* Grid pattern */
@@ -592,7 +611,7 @@ img {
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 52px 52px;
+  background-size: 42px 42px;
   pointer-events: none;
 }
 
@@ -612,8 +631,8 @@ img {
 
 .map-dot {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border: 0;
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -627,8 +646,8 @@ img {
 
 .map-dot:hover,
 .map-dot.active {
-  width: 14px;
-  height: 14px;
+  width: 11px;
+  height: 11px;
   background: #fff;
   box-shadow: 0 0 18px rgba(255, 255, 255, 0.5);
   z-index: 3;
@@ -645,16 +664,16 @@ img {
   display: grid;
   place-items: center;
   text-align: center;
-  padding: 30px;
+  padding: 24px;
   color: var(--text-muted);
   z-index: 2;
-  font-size: 15px;
+  font-size: 12px;
 }
 
 .axis {
   position: absolute;
   color: var(--text-muted);
-  font: 500 10px var(--font-mono);
+  font: 500 8px var(--font-mono);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   z-index: 1;
@@ -662,13 +681,13 @@ img {
 }
 
 .axis-x {
-  bottom: 18px;
-  right: 20px;
+  bottom: 14px;
+  right: 16px;
 }
 
 .axis-y {
-  top: 18px;
-  left: 20px;
+  top: 14px;
+  left: 16px;
   writing-mode: vertical-rl;
 }
 
@@ -676,20 +695,20 @@ img {
 .game-panel {
   background: var(--bg-elevated);
   border-left: 1px solid var(--border);
-  padding: 28px 24px;
+  padding: 20px 18px;
   overflow-y: auto;
-  max-height: calc(100vh - 200px);
+  min-height: 0;
 }
 
 .game-panel h2 {
-  font-size: 24px;
+  font-size: 19px;
   font-weight: 700;
   line-height: 1.2;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
 }
 
 .game-panel p {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.65;
   color: var(--text-muted);
 }
@@ -702,45 +721,45 @@ img {
 .panel-cover {
   width: 100%;
   height: auto;
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
 .game-panel dl {
   border-top: 1px solid var(--border);
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .game-panel dl div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 0;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border);
 }
 
 .game-panel dt {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--text-muted);
 }
 
 .game-panel dd {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .panel-note {
-  margin-top: 28px;
-  font-size: 11px;
+  margin-top: 20px;
+  font-size: 10px;
   color: var(--text-muted);
   font-style: italic;
 }
 
 .similar-list {
-  margin-top: 24px;
+  margin-top: 18px;
 }
 
 .similar-list ul {
@@ -749,9 +768,9 @@ img {
 }
 
 .similar-list li {
-  padding: 8px 0;
+  padding: 6px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-secondary);
   transition: color var(--transition-fast);
 }
