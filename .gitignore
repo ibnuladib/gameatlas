@@ -8,6 +8,8 @@ dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+build-output*.log
+build-error*.log
 # OS
 .DS_Store
 Thumbs.db
@@ -15,12 +17,18 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-.env*
+!.env.example
 # Python
 __pycache__/
 *.pyc
+.venv/
+python/.venv/
 # Supabase migrations
 db/migrations/*.sql
 # Build artifacts
 out/
 build/
+*.tsbuildinfo
+
+# Supabase CLI scratch dir
+supabase/.temp/

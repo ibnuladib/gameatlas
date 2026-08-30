@@ -1,8 +1,8 @@
 httpx
-pandas
+python-dotenv
 sentence-transformers
 numpy
 scikit-learn
 umap-learn
-psycopg[binary]
+supabase
 tqdm

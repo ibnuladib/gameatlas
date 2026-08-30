@@ -6,24 +6,31 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test \"lib/**/*.test.ts\"",
+    "test:python": "cd python && .venv/Scripts/python.exe -m unittest discover -s pipeline -p \"test_*.py\"",
+    "db:status": "node scripts/db-status.mjs",
+    "db:migrate": "node scripts/apply-migrations.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "2.39.2",
+    "@tanstack/react-query": "4.35.0",
+    "autoprefixer": "10.4.16",
     "next": "13.5.6",
+    "plotly.js-dist-min": "^4.0.0",
+    "postcss": "8.4.32",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "@tanstack/react-query": "4.35.0",
-    "@supabase/supabase-js": "2.39.2",
-    "zod": "3.22.4",
+    "react-plotly.js": "^4.1.0",
     "tailwindcss": "3.4.0",
-    "postcss": "8.4.32",
-    "autoprefixer": "10.4.16"
+    "zod": "3.22.4"
   },
   "devDependencies": {
-    "typescript": "5.2.2",
-    "@types/react": "18.2.41",
     "@types/node": "20.12.2",
+    "@types/react": "18.2.41",
     "eslint": "8.57.0",
-    "eslint-config-next": "13.5.6"
+    "eslint-config-next": "13.5.6",
+    "typescript": "5.2.2"
   }
 }
