@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="site-header fade-in">
           <Link href="/" className="brand">GAME<span>ATLAS</span></Link>
           <nav>
-            <Link href="/map">Map</Link>
+            <Link href="/">Map</Link>
             <Link href="/ask">Ask</Link>
             <Link href="/recommendations">For you</Link>
             <Link href="/my-games" className="nav-cta">Connect Steam</Link>
