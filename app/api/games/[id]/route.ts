@@ -6,8 +6,8 @@ import { sanitizeErrorMessage } from '@/lib/security/sanitize';
 
 const paramsSchema = z.object({ id: z.coerce.number().int().positive().max(2_000_000_000) });
 
-export async function GET(_request: Request, context: { params: { id: string } }) {
-  const parsed = paramsSchema.safeParse(context.params);
+export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
+  const parsed = paramsSchema.safeParse(await context.params);
   if (!parsed.success) return jsonResponse({ error: 'Invalid id' }, { status: 400 });
 
   const supabase = getServerSupabaseClient();

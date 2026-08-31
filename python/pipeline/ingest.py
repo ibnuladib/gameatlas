@@ -1,4 +1,4 @@
-"""Pull ~1,000 popular Steam games and upsert into `games`.
+"""Pull ~2,000 popular Steam games and upsert into `games`.
 
 Popularity ranking uses SteamSpy owner/review proxies (the storefront cannot
 rank the full app list without hundreds of thousands of rate-limited calls).

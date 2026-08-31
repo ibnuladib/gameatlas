@@ -3,7 +3,6 @@ const { SECURITY_HEADERS } = require('./lib/security/headers.constants.js');
 
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   poweredByHeader: false,
   async headers() {
     return [
@@ -16,3 +15,5 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+
+import('@opennextjs/cloudflare').then(m => m.initOpenNextCloudflareForDev());
