@@ -42,16 +42,31 @@ def project(matrix: np.ndarray) -> np.ndarray:
     return reducer.fit_transform(matrix)
 
 
+def fetch_all_embeddings(supabase, model: str, model_version: str) -> list[dict]:
+    """Page through get_embeddings — PostgREST silently caps RPC results at 1000."""
+    rows: list[dict] = []
+    start = 0
+    page_size = 1000
+    while True:
+        res = (
+            supabase.rpc(
+                "get_embeddings",
+                {"p_model": model, "p_model_version": model_version},
+            )
+            .range(start, start + page_size - 1)
+            .execute()
+        )
+        page = res.data or []
+        rows.extend(page)
+        if len(page) < page_size:
+            return rows
+        start += page_size
+
+
 def main() -> None:
     supabase = get_client()
-    
-    # Use the RPC to get embeddings from the private schema
-    res = supabase.rpc(
-        "get_embeddings", 
-        {"p_model": EMBED_MODEL, "p_model_version": EMBED_MODEL_VERSION}
-    ).execute()
-    
-    rows = res.data or []
+
+    rows = fetch_all_embeddings(supabase, EMBED_MODEL, EMBED_MODEL_VERSION)
     
     if not rows:
         raise SystemExit("No embeddings to project. Run embed first.")

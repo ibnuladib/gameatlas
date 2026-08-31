@@ -25,7 +25,7 @@ export async function listMappedGames(supabase: SupabaseClient, filters: MapFilt
   let query = supabase
     .from('games')
     .select(`${GAME_COLUMNS}, game_coordinates!inner(x, y, projection_version)`)
-    .limit(1500);
+    .limit(2500);
 
   if (filters.q) query = query.ilike('name', `%${escapeLikePattern(filters.q)}%`);
   if (filters.genre) query = query.contains('genres', [filters.genre]);
